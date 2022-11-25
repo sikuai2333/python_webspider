@@ -1,0 +1,61 @@
+'''
+Descripttion: 
+version: 
+Author: sikuai
+Date: 2022-09-21 22:25:32
+LastEditors: sikuai
+LastEditTime: 2022-11-25 08:49:19
+'''
+from lxml import etree
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+page = 0
+search_url = 'https://www.toolbaba.cn/ip?p='
+
+#去除selenium自动提示
+options = webdriver.ChromeOptions()
+options.add_experimental_option('excludeSwitches', ['enable-automation'])
+options.add_argument("--headless")
+#去除selenium检测
+options.add_argument('--disable-blink-features=AutomationControlled')
+options.add_argument('--disable-blink-features=AutomationControlledByDomain')
+options.add_argument('--disable-blink-features=AutomationControlledByUrl')
+options.add_argument('--disable-blink-features=AutomationControlledByUrlBlockList')
+#去除证书
+options.add_argument('-ignore-certificate-errors')
+options.add_argument('-ignore -ssl-errors')
+driver = webdriver.Chrome(options=options)
+prefs = {"profile.default_content_setting_values.notifications": 2}
+options.add_experimental_option("prefs", prefs)
+while True:
+    # try:
+    driver.get(search_url+str(page))
+    page = page + 1
+    print(search_url+str(page))
+    # time.sleep(5)
+    for i in range(1,110):
+        try:
+            ip = driver.find_element(By.XPATH,r'/html/body/div[1]/div[1]/div[4]/div/table/tbody/tr['+str(i)+']/td[1]').text
+            # print(ip)
+            port = driver.find_element(By.XPATH,r'/html/body/div[1]/div[1]/div[4]/div/table/tbody/tr['+str(i)+']/td[2]').text
+            # print(port)
+            ip_type = driver.find_element(By.XPATH,r'/html/body/div/div[1]/div[4]/div/table/tbody/tr['+str(i)+']/td[3]').text
+            ip_time = driver.find_element(By.XPATH,r'/html/body/div[1]/div[1]/div[4]/div/table/tbody/tr['+str(i)+']/td[6]').text
+            print(ip+':'+port)
+            if ip_type == 'HTTPS':
+                with open('https.txt','a',encoding='utf-8') as f:
+                    f.write('https://'+ip+':'+port+'\n')
+                    f.close()
+            elif ip_type == 'HTTP':
+                with open('http.txt','a',encoding='utf-8') as f:
+                    f.write('https://'+ip+':'+port+'\n')
+                    f.close()
+            else:
+                continue
+        except:
+            pass
+    # except:
+    #     page = page + 1
+
+    #     continue
