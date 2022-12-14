@@ -1,0 +1,46 @@
+'''
+Descripttion: 
+version: 39
+Author: sikuai
+Date: 2022-12-14 10:30:27
+LastEditors: sikuai
+LastEditTime: 2022-12-14 11:37:33
+'''
+import requests
+import time
+from lxml import etree
+def getPageNum(url,headers):
+    res = requests.get(url=url,headers=headers)
+    # res.text为获取的网页，此处确定编码并etree处理方便下面解析
+    res.encoding = "utf-8"
+    html = etree.HTML(res.text)
+    num = html.xpath("/html/body/div[1]/div[4]/div/div[1]/div[1]/small")[0].text
+    # print(num,type(num))
+    page = (int(num.replace("个","")) // 12 ) + 2
+    print(page)
+    loopPage(url,headers,page)
+def loopPage(url,headers,page):
+    for p in range(1,page):
+        print(p)
+        url_p = url+'?p='+str(p)
+        res = requests.get(url=url_p,headers=headers)
+        res.encoding = "utf-8"
+        html = etree.HTML(res.text)
+        getPage(html)
+def getPage(html):
+    for list in range(1,13):
+        try:
+            for i in range(1,100):
+                msg = html.xpath("/html/body/div[1]/div[4]/div/div[2]/div["+str(list)+"]/div/div[2]/div[1]/a["+str(i)+"]/div/span[2]")[0].text
+                with open('娱乐.txt','a',encoding='utf-8') as f:
+                    f.write(msg+'\n')
+                    f.close()
+        except:
+            continue
+if __name__=="__main__":
+    print("此处只卸了ent即娱乐的，也可以写个list放所有的类型，也可以写到excel里，大佬自行改吧")
+    url = 'https://tophub.today/c/ent'
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36',
+    }
+    getPageNum(url,headers)
