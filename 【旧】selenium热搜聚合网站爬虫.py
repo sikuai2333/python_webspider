@@ -11,8 +11,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 search_url = 'https://tophub.today/c/ent'
-
-
 #去除selenium自动提示
 options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-automation'])
